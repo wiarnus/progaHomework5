@@ -82,6 +82,6 @@ int* merge(int* intervals, int intervalsSize, int* returnSize) {
     
     *returnSize = count * 2;
     
-    return result;
+    return NULL;
 }
 
