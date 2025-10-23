@@ -77,6 +77,6 @@ int* merge(int* intervals, int intervalsSize, int* returnSize) {
         }
     }
     
-    *returnSize = result_count * 2;
+    *returnSize = result_count;  
     return result;
 }
