@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 int max_subarray_sum(int* nums, int size) {
+    if (size == 0) return 0;
+    
     int max_sum = nums[0];
     int current_sum = nums[0];
     
@@ -23,22 +25,25 @@ int max_subarray_sum(int* nums, int size) {
 int length_of_lis(int* nums, int numsSize) {
     if (numsSize == 0) return 0;
     
-    int dp[numsSize];
-    int max_len = 1;
+    int max_length = 1;
+    int current_length = 1;
     
-    for (int i = 0; i < numsSize; i++) {
-        dp[i] = 1;
-        for (int j = 0; j < i; j++) {
-            if (nums[j] < nums[i] && dp[j] + 1 > dp[i]) {
-                dp[i] = dp[j] + 1;
+    for (int i = 1; i < numsSize; i++) {
+        if (nums[i] > nums[i - 1]) {
+            current_length++;
+            if (current_length > max_length) {
+                max_length = current_length;
             }
-        }
-        if (dp[i] > max_len) {
-            max_len = dp[i];
+        } else {
+            current_length = 1;
         }
     }
     
-    return max_len;
+    return max_length;
+}
+
+int compare_intervals(const void* a, const void* b) {
+    return ((int*)a)[0] - ((int*)b)[0];
 }
 
 int* merge(int* intervals, int intervalsSize, int* returnSize) {
@@ -47,47 +52,31 @@ int* merge(int* intervals, int intervalsSize, int* returnSize) {
         return NULL;
     }
     
-    int pairCount = intervalsSize / 2;
+    int* result = (int*)malloc(intervalsSize * 2 * sizeof(int));
+    int result_count = 0;
     
-    for (int i = 0; i < pairCount - 1; i++) {
-        for (int j = 0; j < pairCount - i - 1; j++) {
-            if (intervals[j * 2] > intervals[(j + 1) * 2]) {
-                int temp_start = intervals[j * 2];
-                int temp_end = intervals[j * 2 + 1];
-                intervals[j * 2] = intervals[(j + 1) * 2];
-                intervals[j * 2 + 1] = intervals[(j + 1) * 2 + 1];
-                intervals[(j + 1) * 2] = temp_start;
-                intervals[(j + 1) * 2 + 1] = temp_end;
-            }
-        }
-    }
+    qsort(intervals, intervalsSize, 2 * sizeof(int), compare_intervals);
     
-    int* result = (int*)malloc(intervalsSize * sizeof(int));
-    int count = 0;
-    int start = intervals[0];
-    int end = intervals[1];
+    result[0] = intervals[0];
+    result[1] = intervals[1];
+    result_count = 1;
     
-    for (int i = 1; i < pairCount; i++) {
+    for (int i = 1; i < intervalsSize; i++) {
+        int last_end = result[result_count * 2 - 1];
         int current_start = intervals[i * 2];
         int current_end = intervals[i * 2 + 1];
         
-        if (current_start <= end) {
-            if (current_end > end) {
-                end = current_end;
+        if (current_start <= last_end) {
+            if (current_end > last_end) {
+                result[result_count * 2 - 1] = current_end;
             }
         } else {
-            result[count * 2] = start;
-            result[count * 2 + 1] = end;
-            count++;
-            start = current_start;
-            end = current_end;
+            result_count++;
+            result[result_count * 2 - 2] = current_start;
+            result[result_count * 2 - 1] = current_end;
         }
     }
     
-    result[count * 2] = start;
-    result[count * 2 + 1] = end;
-    count++;
-    
-    *returnSize = count * 2;
+    *returnSize = result_count * 2;
     return result;
 }
