@@ -21,23 +21,25 @@ int max_subarray_sum(int* nums, int size) {
 }
 
 int length_of_lis(int* nums, int numsSize) {
-    int counter = 1;
-    int temp = 0;
-    for (int i = 1; i < numsSize; i++) {
-        if (nums[i] > nums[i-1]) {
-            counter += 1;
-        } else {
-            if (counter>temp){
-                temp=counter;
+    if (numsSize == 0) return 0;
+    
+    int dp[numsSize];
+    int max_len = 1;
+    
+    for (int i = 0; i < numsSize; i++) {
+        dp[i] = 1;
+        for (int j = 0; j < i; j++) {
+            if (nums[j] < nums[i] && dp[j] + 1 > dp[i]) {
+                dp[i] = dp[j] + 1;
             }
-            counter = 1;
+        }
+        if (dp[i] > max_len) {
+            max_len = dp[i];
         }
     }
     
-    printf("%d ", temp); 
-    return 0;
+    return max_len;
 }
-
 
 int* merge(int* intervals, int intervalsSize, int* returnSize) {
     if (intervalsSize == 0) {
@@ -45,15 +47,17 @@ int* merge(int* intervals, int intervalsSize, int* returnSize) {
         return NULL;
     }
     
-    for (int i = 0; i < intervalsSize - 1; i += 2) {
-        for (int j = 0; j < intervalsSize - i - 2; j += 2) {
-            if (intervals[j] > intervals[j + 2]) {
-                int temp_start = intervals[j];
-                int temp_end = intervals[j + 1];
-                intervals[j] = intervals[j + 2];
-                intervals[j + 1] = intervals[j + 3];
-                intervals[j + 2] = temp_start;
-                intervals[j + 3] = temp_end;
+    int pairCount = intervalsSize / 2;
+    
+    for (int i = 0; i < pairCount - 1; i++) {
+        for (int j = 0; j < pairCount - i - 1; j++) {
+            if (intervals[j * 2] > intervals[(j + 1) * 2]) {
+                int temp_start = intervals[j * 2];
+                int temp_end = intervals[j * 2 + 1];
+                intervals[j * 2] = intervals[(j + 1) * 2];
+                intervals[j * 2 + 1] = intervals[(j + 1) * 2 + 1];
+                intervals[(j + 1) * 2] = temp_start;
+                intervals[(j + 1) * 2 + 1] = temp_end;
             }
         }
     }
@@ -63,17 +67,20 @@ int* merge(int* intervals, int intervalsSize, int* returnSize) {
     int start = intervals[0];
     int end = intervals[1];
     
-    for (int i = 2; i < intervalsSize; i += 2) {
-        if (intervals[i] <= end) {
-            if (intervals[i + 1] > end) {
-                end = intervals[i + 1];
+    for (int i = 1; i < pairCount; i++) {
+        int current_start = intervals[i * 2];
+        int current_end = intervals[i * 2 + 1];
+        
+        if (current_start <= end) {
+            if (current_end > end) {
+                end = current_end;
             }
         } else {
             result[count * 2] = start;
             result[count * 2 + 1] = end;
             count++;
-            start = intervals[i];
-            end = intervals[i + 1];
+            start = current_start;
+            end = current_end;
         }
     }
     
@@ -84,4 +91,3 @@ int* merge(int* intervals, int intervalsSize, int* returnSize) {
     *returnSize = count * 2;
     return result;
 }
-
