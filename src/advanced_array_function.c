@@ -38,15 +38,13 @@ int length_of_lis(int* nums, int numsSize) {
 }
 
 int* merge(int* intervals, int intervalsSize, int* returnSize) {
-    static int result[100];
-    
     if (intervalsSize == 0) {
         *returnSize = 0;
         return NULL;
     }
     
-    for (int i = 0; i < intervalsSize - 2; i += 2) {
-        for (int j = 0; j < intervalsSize - 2 - i; j += 2) {
+    for (int i = 0; i < intervalsSize - 1; i += 2) {
+        for (int j = 0; j < intervalsSize - i - 2; j += 2) {
             if (intervals[j] > intervals[j + 2]) {
                 int temp_start = intervals[j];
                 int temp_end = intervals[j + 1];
@@ -56,6 +54,12 @@ int* merge(int* intervals, int intervalsSize, int* returnSize) {
                 intervals[j + 3] = temp_end;
             }
         }
+    }
+    
+    int* result = (int*)malloc(intervalsSize * sizeof(int));
+    if (result == NULL) {
+        *returnSize = 0;
+        return NULL;
     }
     
     int count = 0;
@@ -82,6 +86,6 @@ int* merge(int* intervals, int intervalsSize, int* returnSize) {
     
     *returnSize = count * 2;
     
-    return NULL;
+    return result;
 }
 
