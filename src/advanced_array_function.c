@@ -1,4 +1,5 @@
 #include "../include/advanced_array_function.h"
+#include <stdlib.h>
 
 int max_subarray_sum(int* nums, int size) {
     int max_sum = nums[0];
@@ -37,6 +38,7 @@ int length_of_lis(int* nums, int numsSize) {
     return 0;
 }
 
+
 int* merge(int* intervals, int intervalsSize, int* returnSize) {
     if (intervalsSize == 0) {
         *returnSize = 0;
@@ -57,11 +59,6 @@ int* merge(int* intervals, int intervalsSize, int* returnSize) {
     }
     
     int* result = (int*)malloc(intervalsSize * sizeof(int));
-    if (result == NULL) {
-        *returnSize = 0;
-        return NULL;
-    }
-    
     int count = 0;
     int start = intervals[0];
     int end = intervals[1];
@@ -85,7 +82,6 @@ int* merge(int* intervals, int intervalsSize, int* returnSize) {
     count++;
     
     *returnSize = count * 2;
-    
     return result;
 }
 
